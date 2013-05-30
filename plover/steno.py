@@ -66,8 +66,9 @@ STENO_KEY_ORDER = {"#": 0,
                    "-T": 19,
                    "-S": 20,
                    "-D": 21,
-                   "-Z": 22}
-
+                   "-Z": 22,
+                   "{calc}": 23, # Calculator button (sidewinder-specific)
+}
 
 class Stroke:
     """A standardized data model for stenotype machine strokes.
@@ -113,8 +114,8 @@ class Stroke:
         if steno_keys_set & self.IMPLICIT_HYPHEN:
             self.rtfcre = ''.join(key.strip('-') for key in steno_keys)
         else:
-            pre = ''.join(k.strip('-') for k in steno_keys if k[-1] == '-' or 
-                          k == '#')
+            pre = ''.join(k.strip('-') for k in steno_keys if k[-1] == '-' or
+                          k == '#' or "{" in k) # special keys
             post = ''.join(k.strip('-') for k in steno_keys if k[0] == '-')
             self.rtfcre = '-'.join([pre, post]) if post else pre
 

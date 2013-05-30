@@ -49,6 +49,7 @@ KEYSTRING_TO_STENO_KEY = {"a": "S-",
                           "0": "#",
                           "-": "#",
                           "=": "#",
+                          "{148}": "{calc}", # Calculator button (sidewinder-specific)
                          }
 
 
@@ -93,8 +94,8 @@ class Stenotype(StenotypeBase):
             and event.keystring is not None
             and not self._keyboard_capture.is_keyboard_suppressed()):
             self._keyboard_emulation.send_backspaces(1)
-        if event.keystring in KEYSTRING_TO_STENO_KEY:
-            self._down_keys.add(event.keystring)
+        if event.keystring in KEYSTRING_TO_STENO_KEY or ("{%d}" % event.keycode) in KEYSTRING_TO_STENO_KEY:
+            self._down_keys.add(event.keystring or ("{%d}" % event.keycode))
 
     def _post_suppress(self, suppress, steno_keys):
         """Backspace the last stroke since it matched a command.
@@ -109,9 +110,10 @@ class Stenotype(StenotypeBase):
 
     def _key_up(self, event):
         """Called when a key is released."""
-        if event.keystring in KEYSTRING_TO_STENO_KEY:            
+        if event.keystring in KEYSTRING_TO_STENO_KEY 
+                or ("{%d}" % event.keycode) in KEYSTRING_TO_STENO_KEY:
             # Process the newly released key.
-            self._released_keys.add(event.keystring)
+            self._released_keys.add(event.keystring or "{%d}"%event.keycode)
             # Remove invalid released keys.
             self._released_keys = self._released_keys.intersection(self._down_keys)
 
