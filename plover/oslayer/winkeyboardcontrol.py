@@ -67,8 +67,8 @@ class KeyboardCapture():
                     self.shift = func_name == 'key_down'
                 if event.Key in self.ALT_KEYS:
                     self.alt = func_name == 'key_down'
-                if ascii and not self.ctrl and not self.alt and not self.shift:
-                    getattr(self, func_name, lambda x: True)(KeyboardEvent(ascii))
+                if not self.ctrl and not self.alt and not self.shift:
+                    getattr(self, func_name, lambda x: True)(KeyboardEvent(event.ScanCode, ascii))
                     return not self.is_keyboard_suppressed()
             
             return True
@@ -191,7 +191,8 @@ class KeyboardEmulation:
 class KeyboardEvent(object):
     """A keyboard event."""
 
-    def __init__(self, char):
+    def __init__(self, code, char):
+        self.keycode = code
         self.keystring = char
 
 if __name__ == '__main__':
