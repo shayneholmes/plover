@@ -50,6 +50,8 @@ KEYSTRING_TO_STENO_KEY = {"a": "S-",
                           "-": "#",
                           "=": "#",
                           "{148}": "{calc}", # Calculator button (sidewinder-specific)
+                          "{110}": "{f23}",  # windows-specific?
+                          "{118}": "{f24}",  # windows-specific?
                          }
 
 

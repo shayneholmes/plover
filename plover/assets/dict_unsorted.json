@@ -1,4 +1,6 @@
 {
+"{f24}": "{PLOVER:RESUME}",
+"{f23}": "{PLOVER:SUSPEND}",
 "{calc}": "{PLOVER:TOGGLE}",
 "PHO*EUFP": "",
 "S*PTS": "",
