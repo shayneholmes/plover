@@ -11,6 +11,18 @@
 from plover.machine.base import StenotypeBase
 from plover.oslayer import keyboardcontrol
 
+import logging
+from win32api import OutputDebugString
+
+LOGGER_NAME = 'plover_logger'
+
+class DbgViewHandler(logging.Handler):
+    def __init__(self):
+        logging.Handler.__init__(self)
+
+    def emit(self, record):
+        OutputDebugString(self.format(record))
+
 KEYSTRING_TO_STENO_KEY = {"a": "S-",
                           "q": "S-",
                           "w": "T-",
@@ -75,6 +87,8 @@ class Stenotype(StenotypeBase):
         self._down_keys = set()
         self._released_keys = set()
         self.arpeggiate = params['arpeggiate']
+        self._logger = logging.getLogger(LOGGER_NAME)
+        self._logger.addHandler(DbgViewHandler())
 
     def start_capture(self):
         """Begin listening for output from the stenotype machine."""
@@ -132,6 +146,9 @@ class Stenotype(StenotypeBase):
                 self._down_keys.clear()
                 self._released_keys.clear()
                 self._notify(steno_keys)
+        # self._logger.info('key released: %d' % event.keycode)
+        if (118 == event.keycode):
+            self._logger.info('keys pressed: %s' % self._down_keys)
 
     @staticmethod
     def get_option_info():
