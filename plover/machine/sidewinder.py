@@ -139,6 +139,12 @@ class Stenotype(StenotypeBase):
                             self._down_keys == self._released_keys)
         if self.arpeggiate:
             send_strokes &= event.keystring == ' '
+        if (not send_strokes and 118 == event.keycode):
+            self._logger.info('F24 pressed! Other keys pressed, too: %s' % self._down_keys)
+            self._logger.info('Clearing and sending just F24.')
+            self._down_keys.clear()
+            self._down_keys.add("{%d}" % event.keycode)
+            send_strokes = True
         if send_strokes:
             steno_keys = [KEYSTRING_TO_STENO_KEY[k] for k in self._down_keys
                           if k in KEYSTRING_TO_STENO_KEY]
@@ -147,8 +153,7 @@ class Stenotype(StenotypeBase):
                 self._released_keys.clear()
                 self._notify(steno_keys)
         # self._logger.info('key released: %d' % event.keycode)
-        if (118 == event.keycode):
-            self._logger.info('keys pressed: %s' % self._down_keys)
+        # self._logger.info('keys pressed: %s' % self._down_keys)
 
     @staticmethod
     def get_option_info():
