@@ -164,7 +164,7 @@ class StenoEngine(object):
         self.translator.add_listener(self.formatter.format)
         # This seems like a reasonable number. If this becomes a problem it can
         # be parameterized.
-        self.translator.set_min_undo_length(10)
+        self.translator.set_min_undo_length(30)
 
         self.full_output = SimpleNamespace()
         self.command_only_output = SimpleNamespace()
