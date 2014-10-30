@@ -27,19 +27,21 @@ import win32con
 # For the purposes of this class, we'll only report key presses that
 # result in these outputs in order to exclude special key combos.
 KEY_TO_ASCII = {
-    41: '`', 2: '1', 3: '2', 4: '3', 5: '4', 6: '5', 7: '6', 8: '7', 
-    9: '8', 10: '9', 11: '0', 12: '-', 13: '=', 16: 'q', 
+    41: '`', 2: '1', 3: '2', 4: '3', 5: '4', 6: '5', 7: '6', 8: '7',
+    9: '8', 10: '9', 11: '0', 12: '-', 13: '=', 16: 'q',
     17: 'w', 18: 'e', 19: 'r', 20: 't', 21: 'y', 22: 'u', 23: 'i',
     24: 'o', 25: 'p', 26: '[', 27: ']', 43: '\\',
     30: 'a', 31: 's', 32: 'd', 33: 'f', 34: 'g', 35: 'h', 36: 'j',
     37: 'k', 38: 'l', 39: ';', 40: '\'', 44: 'z', 45: 'x',
-    46: 'c', 47: 'v', 48: 'b', 49: 'n', 50: 'm', 51: ',', 
+    46: 'c', 47: 'v', 48: 'b', 49: 'n', 50: 'm', 51: ',',
     52: '.', 53: '/', 57: ' ',
 }
 
-# "Narrow python" unicode objects store chracters in UTF-16 so we 
-# can't iterate over characters in the standard way. This workaround 
+# "Narrow python" unicode objects store chracters in UTF-16 so we
+# can't iterate over characters in the standard way. This workaround
 # let's us iterate over full characters in the string.
+
+
 def characters(s):
     encoded = s.encode('utf-32-be')
     characters = []
@@ -67,6 +69,7 @@ KEYEVENTF_UNICODE = 0x0004
 INPUT_MOUSE = 0
 INPUT_KEYBOARD = 1
 
+
 class MOUSEINPUT(ctypes.Structure):
     _fields_ = (('dx', LONG),
                 ('dy', LONG),
@@ -75,6 +78,7 @@ class MOUSEINPUT(ctypes.Structure):
                 ('time', DWORD),
                 ('dwExtraInfo', ULONG_PTR))
 
+
 class KEYBDINPUT(ctypes.Structure):
     _fields_ = (('wVk', WORD),
                 ('wScan', WORD),
@@ -82,14 +86,15 @@ class KEYBDINPUT(ctypes.Structure):
                 ('time', DWORD),
                 ('dwExtraInfo', ULONG_PTR))
 
+
 class _INPUTunion(ctypes.Union):
     _fields_ = (('mi', MOUSEINPUT),
                 ('ki', KEYBDINPUT))
 
+
 class INPUT(ctypes.Structure):
     _fields_ = (('type', DWORD),
                 ('union', _INPUTunion))
-
 
 
 """
@@ -147,9 +152,9 @@ KEYNAME_TO_KEYCODE = collections.defaultdict(list, {
     'F6': [0x75], 'F7': [0x76], 'F8': [0x77], 'F9': [0x78], 'F10': [0x79],
     'F11': [0x7A], 'F12': [0x7B], 'F13': [0x7C], 'F14': [0x7D], 'F15': [0x7E],
     'F16': [0x7F], 'F17': [0x80], 'F18': [0x81], 'F19': [0x82], 'F20': [0x83],
-    'F21': [0x84], 'F22': [0x85], 'F23': [0x86], 'F24': [0x87], 'F25': [], 
-    'F26': [], 'F27': [], 'F28': [], 'F29': [], 'F30': [], 'F31': [], 'F32': [],
-    'F33': [], 'F34': [], 'F35': [],
+    'F21': [0x84], 'F22': [0x85], 'F23': [0x86], 'F24': [0x87], 'F25': [],
+    'F26': [], 'F27': [], 'F28': [], 'F29': [], 'F30': [], 'F31': [],
+    'F32': [], 'F33': [], 'F34': [], 'F35': [],
 
     'L1': [], 'L2': [], 'L3': [], 'L4': [], 'L5': [], 'L6': [],
     'L7': [], 'L8': [], 'L9': [], 'L10': [],
@@ -169,9 +174,9 @@ KEYNAME_TO_KEYCODE = collections.defaultdict(list, {
     'KP_Separator': [], 'KP_Space': [], 'KP_Subtract': [0x6D], 'KP_Tab': [],
     'KP_Up': [],
 
-    'ampersand': [0xA1, 0x37], 'apostrophe': [0xDE], 'asciitilde': [0xA1, 0xC0],
-    'asterisk': [0xA1, 0x38], 'at': [0xA1, 0x32], 'backslash': [0xDC],
-    'braceleft': [0xA1, 0xDB], 'braceright': [0xA1, 0xDD],
+    'ampersand': [0xA1, 0x37], 'apostrophe': [0xDE],
+    'asciitilde': [0xA1, 0xC0], 'asterisk': [0xA1, 0x38], 'at': [0xA1, 0x32],
+    'backslash': [0xDC], 'braceleft': [0xA1, 0xDB], 'braceright': [0xA1, 0xDD],
     'bracketleft': [0xDB], 'bracketright': [0xDD], 'colon': [0xA1, 0xBA],
     'comma': [0xBC], 'division': [], 'dollar': [0xA1, 0x34], 'equal': [0xBB],
     'exclam': [0xA1, 0x31], 'greater': [0xA1, 0xBE], 'hyphen': [0xBD],
@@ -186,8 +191,8 @@ KEYNAME_TO_KEYCODE = collections.defaultdict(list, {
     'Help': [0x2F], 'Mode_switch': [0x1F], 'Menu': [0x5D],
 
 
-    'Begin': [], 'Cancel': [0x03], 'Clear': [0x0C], 'Execute': [0x2B], 'Find': [],
-     'Linefeed': [], 
+    'Begin': [], 'Cancel': [0x03], 'Clear': [0x0C], 'Execute': [0x2B],
+    'Find': [], 'Linefeed': [],
     'Multi_key': [], 'MultipleCandidate': [], 'Next': [0x22],
     'PreviousCandidate': [], 'Prior': [0x21], 'Redo': [], 'Select': [0x29],
     'SingleCandidate': [], 'Undo': [],
@@ -201,19 +206,20 @@ KEYNAME_TO_KEYCODE = collections.defaultdict(list, {
 
 KEYNAME_TO_UNICODE = {
     # Decimal values of Unicode chars
-    'plusminus': 177, 'aring': 229, 'yen': 165, 'ograve': 242, 'adiaeresis': 228,
-    'Ntilde': 209, 'questiondown': 191, 'Yacute': 221, 'Atilde': 195,
-    'ccedilla': 231, 'copyright': 169, 'ntilde': 241, 'otilde': 245,
-    'masculine': 9794, 'Eacute': 201, 'ocircumflex': 244, 'guillemotright': 187,
-    'ecircumflex': 234, 'uacute': 250, 'cedilla': 184, 'oslash': 248, 'acute': 237,
-    'ssharp': 223, 'Igrave': 204, 'twosuperior': 178, 'udiaeresis': 252,
-    'notsign': 172, 'exclamdown': 161, 'ordfeminine': 9792, 'Otilde': 213,
-    'agrave': 224, 'ection': 167, 'egrave': 232, 'macron': 175, 'Icircumflex': 206,
-    'diaeresis': 168, 'ucircumflex': 251, 'atilde': 227, 'Acircumflex': 194,
-    'degree': 176, 'THORN': 222, 'acircumflex': 226,
-    'Aring': 197, 'Ooblique': 216, 'Ugrave': 217, 'Agrave': 192, 'ydiaeresis': 255,
-    'threesuperior': 179, 'Egrave': 200, 'Idiaeresis': 207, 'igrave': 236,
-    'ETH': 208, 'Ecircumflex': 202, 'Aacute': 193, 'cent': 162, 'registered': 174,
+    'plusminus': 177, 'aring': 229, 'yen': 165, 'ograve': 242,
+    'adiaeresis': 228, 'Ntilde': 209, 'questiondown': 191, 'Yacute': 221,
+    'Atilde': 195, 'ccedilla': 231, 'copyright': 169, 'ntilde': 241,
+    'otilde': 245, 'masculine': 9794, 'Eacute': 201, 'ocircumflex': 244,
+    'guillemotright': 187, 'ecircumflex': 234, 'uacute': 250, 'cedilla': 184,
+    'oslash': 248, 'acute': 237, 'ssharp': 223, 'Igrave': 204,
+    'twosuperior': 178, 'udiaeresis': 252, 'notsign': 172, 'exclamdown': 161,
+    'ordfeminine': 9792, 'Otilde': 213, 'agrave': 224, 'ection': 167,
+    'egrave': 232, 'macron': 175, 'Icircumflex': 206, 'diaeresis': 168,
+    'ucircumflex': 251, 'atilde': 227, 'Acircumflex': 194, 'degree': 176,
+    'THORN': 222, 'acircumflex': 226, 'Aring': 197, 'Ooblique': 216,
+    'Ugrave': 217, 'Agrave': 192, 'ydiaeresis': 255, 'threesuperior': 179,
+    'Egrave': 200, 'Idiaeresis': 207, 'igrave': 236, 'ETH': 208,
+    'Ecircumflex': 202, 'Aacute': 193, 'cent': 162, 'registered': 174,
     'Oacute': 211, 'Adiaeresis': 228, 'guillemotleft': 171, 'ediaeresis': 235,
     'Ograve': 210, 'mu': 956, 'paragraph': 182, 'Ccedilla': 199, 'thorn': 254,
     'threequarters': 190, 'ae': 230, 'brokenbar': 166, 'nobreakspace': 32,
@@ -245,12 +251,12 @@ class KeyboardCapture(threading.Thread):
     CONTROL_KEYS = set(('Lcontrol', 'Rcontrol'))
     SHIFT_KEYS = set(('Lshift', 'Rshift'))
     ALT_KEYS = set(('Lmenu', 'Rmenu'))
-    
+
     def __init__(self):
         threading.Thread.__init__(self)
 
         self.suppress_keyboard(True)
-        
+
         self.shift = False
         self.ctrl = False
         self.alt = False
@@ -267,9 +273,10 @@ class KeyboardCapture(threading.Thread):
                 if event.Key in self.ALT_KEYS:
                     self.alt = func_name == 'key_down'
                 if ascii and not self.ctrl and not self.alt and not self.shift:
-                    getattr(self, func_name, lambda x: True)(KeyboardEvent(ascii))
+                    getattr(self, func_name, lambda x: True)(
+                        KeyboardEvent(ascii))
                     return not self.is_keyboard_suppressed()
-            
+
             return True
 
         self.hm = pyHook.HookManager()
@@ -333,14 +340,14 @@ class KeyboardEmulation:
     def _key_down(self, keyname):
         # Press all keys
         for keycode in KEYNAME_TO_KEYCODE[keyname]:
-            self._SendInput(self._Keyboard(keycode)) 
+            self._SendInput(self._Keyboard(keycode))
 
     # Releases a key
     def _key_up(self, keyname):
         # Release all keys backwards
         for keycode in reversed(KEYNAME_TO_KEYCODE[keyname]):
             self._SendInput(self._Keyboard(keycode, KEYEVENTF_KEYUP))
- 
+
     # Press and release a key
     def _key_press(self, keyname):
         self._key_down(keyname)
@@ -349,7 +356,7 @@ class KeyboardEmulation:
     # Send a Unicode character to application
     def _key_unicode(self, code):
         self._SendInput(self._Keyboard(code, KEYEVENTF_UNICODE))
-    
+
     def send_backspaces(self, number_of_backspaces):
         for _ in xrange(number_of_backspaces):
             self._key_press("BackSpace")
@@ -370,7 +377,7 @@ class KeyboardEmulation:
             # Otherwise, we send it as a Unicode character
             else:
                 self._key_unicode(ord(c))
-            
+
     def send_key_combination(self, combo_string):
         """Emulate a sequence of key combinations.
 
@@ -451,6 +458,7 @@ class KeyboardEmulation:
         for keystring in key_down_stack:
             if keystring:
                 self._key_up(keystring)
+
 
 class KeyboardEvent(object):
     """A keyboard event."""
