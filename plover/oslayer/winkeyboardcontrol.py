@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #!/usr/bin/env python
 # Copyright (c) 2011 Hesky Fisher.
 # See LICENSE.txt for details.
@@ -201,34 +200,29 @@ KEYNAME_TO_KEYCODE = collections.defaultdict(list, {
 })
 
 KEYNAME_TO_UNICODE = {
-
-    'AE': u'Æ', 'Aacute': u'Á', 'Acircumflex': u'Â', 'Adiaeresis': u'ä',
-    'Agrave': u'À', 'Aring': u'Å', 'Atilde': u'Ã', 'Ccedilla': u'Ç', 'Eacute': u'É',
-    'Ecircumflex': u'Ê', 'Ediaeresis': u'Ë', 'Egrave': u'È', 'Eth': u'ð',
-    'ETH': u'Ð', 'Iacute': u'Í', 'Icircumflex': u'Î', 'Idiaeresis': u'Ï',
-    'Igrave': u'Ì', 'Ntilde': u'Ñ', 'Oacute': u'Ó', 'Ocircumflex': u'Ô',
-    'Odiaeresis': u'Ö', 'Ograve': u'Ò', 'Ooblique': u'Ø', 'Otilde': u'Õ',
-    'THORN': u'Þ', 'Thorn': u'Þ', 'Uacute': u'Ú', 'Ucircumflex': u'Û',
-    'Udiaeresis': u'Ü', 'Ugrave': u'Ù', 'Yacute': u'Ý',
-
-    'ae': u'æ', 'aacute': u'á', 'acircumflex': u'â', 'acute': u'´',
-    'adiaeresis': u'ä', 'agrave': u'à', 'aring': u'å', 'atilde': u'ã',
-    'ccedilla': u'ç', 'eacute': u'é', 'ecircumflex': u'ê', 'ediaeresis': u'ë',
-    'egrave': u'è', 'eth': u'ð', 'acute': u'í', 'icircumflex': u'î',
-    'idiaeresis': u'ï', 'igrave': u'ì', 'ntilde': u'ñ', 'oacute': u'ó',
-    'ocircumflex': u'ô', 'odiaeresis': u'ö', 'ograve': u'ò', 'oslash': u'ø',
-    'otilde': u'õ', 'thorn': u'þ', 'uacute': u'ú', 'ucircumflex': u'û',
-    'udiaeresis': u'ü', 'ugrave': u'ù', 'yacute': u'ý', 'ydiaeresis': u'ÿ',
-    'cedilla': u'¸', 'diaeresis': u'¨',
-    'brokenbar': u'¦', 'cent': u'¢', 'copyright': u'©',
-    'currency': u'¤', 'degree': u'°', 'exclamdown': u'¡', 'guillemotleft': u'«',
-    'guillemotright': u'»', 'macron': u'¯', 'masculine': u'♂', 'mu': u'μ',
-    'nobreakspace': u' ', 'notsign': u'¬', 'onehalf': u'½', 'onequarter': u'¼',
-    'onesuperior': u'¹', 'ordfeminine': u'♀', 'paragraph': u'¶',
-    'periodcentered': u'·', 'plusminus': u'±', 'questiondown': u'¿',
-    'registered': u'®', 'script_switch': '', 'ection': u'§', 'ssharp': u'ß',
-    'sterling': u'£', 'threequarters': u'¾', 'threesuperior': u'³',
-    'twosuperior': u'²', 'yen': u'¥'
+    # Decimal values of Unicode chars
+    'plusminus': 177, 'aring': 229, 'yen': 165, 'ograve': 242, 'adiaeresis': 228,
+    'Ntilde': 209, 'questiondown': 191, 'Yacute': 221, 'Atilde': 195,
+    'ccedilla': 231, 'copyright': 169, 'ntilde': 241, 'otilde': 245,
+    'masculine': 9794, 'Eacute': 201, 'ocircumflex': 244, 'guillemotright': 187,
+    'ecircumflex': 234, 'uacute': 250, 'cedilla': 184, 'oslash': 248, 'acute': 237,
+    'ssharp': 223, 'Igrave': 204, 'twosuperior': 178, 'udiaeresis': 252,
+    'notsign': 172, 'exclamdown': 161, 'ordfeminine': 9792, 'Otilde': 213,
+    'agrave': 224, 'ection': 167, 'egrave': 232, 'macron': 175, 'Icircumflex': 206,
+    'diaeresis': 168, 'ucircumflex': 251, 'atilde': 227, 'Acircumflex': 194,
+    'degree': 176, 'THORN': 222, 'acircumflex': 226,
+    'Aring': 197, 'Ooblique': 216, 'Ugrave': 217, 'Agrave': 192, 'ydiaeresis': 255,
+    'threesuperior': 179, 'Egrave': 200, 'Idiaeresis': 207, 'igrave': 236,
+    'ETH': 208, 'Ecircumflex': 202, 'Aacute': 193, 'cent': 162, 'registered': 174,
+    'Oacute': 211, 'Adiaeresis': 228, 'guillemotleft': 171, 'ediaeresis': 235,
+    'Ograve': 210, 'mu': 956, 'paragraph': 182, 'Ccedilla': 199, 'thorn': 254,
+    'threequarters': 190, 'ae': 230, 'brokenbar': 166, 'nobreakspace': 32,
+    'currency': 164, 'ugrave': 249, 'Ucircumflex': 219, 'odiaeresis': 246,
+    'periodcentered': 183, 'Uacute': 218, 'idiaeresis': 239, 'yacute': 253,
+    'sterling': 163, 'AE': 198, 'Ediaeresis': 203, 'onequarter': 188,
+    'onehalf': 189, 'Thorn': 222, 'aacute': 225, 'icircumflex': 238,
+    'Udiaeresis': 220, 'eacute': 233, 'Eth': 240, 'eth': 240, 'Iacute': 205,
+    'onesuperior': 185, 'Ocircumflex': 212, 'Odiaeresis': 214, 'oacute': 243
 }
 
 # Maps from literal characters to their key names.
@@ -353,8 +347,8 @@ class KeyboardEmulation:
         self._key_up(keyname)
 
     # Send a Unicode character to application
-    def _key_unicode(self, ch):
-        self._SendInput(self._Keyboard(ord(ch), KEYEVENTF_UNICODE))
+    def _key_unicode(self, code):
+        self._SendInput(self._Keyboard(code, KEYEVENTF_UNICODE))
     
     def send_backspaces(self, number_of_backspaces):
         for _ in xrange(number_of_backspaces):
@@ -375,7 +369,7 @@ class KeyboardEmulation:
 
             # Otherwise, we send it as a Unicode character
             else:
-                self._key_unicode(c)
+                self._key_unicode(ord(c))
             
     def send_key_combination(self, combo_string):
         """Emulate a sequence of key combinations.
@@ -420,10 +414,7 @@ class KeyboardEmulation:
                 current_command = []
 
                 # Handle unicode characters by pressing them
-                print keystring
                 if keystring in KEYNAME_TO_UNICODE:
-                    print "Keystring is in Unicode"
-                    print keystring
                     self._key_unicode(KEYNAME_TO_UNICODE[keystring])
                     # Reset keystring to nothing to prevent further presses
                     keystring = ''
@@ -450,8 +441,6 @@ class KeyboardEmulation:
         # Record final command key.
         keystring = ''.join(current_command)
         if keystring in KEYNAME_TO_UNICODE:
-                    print "Keystring is in Unicode"
-                    print keystring
                     self._key_unicode(KEYNAME_TO_UNICODE[keystring])
                     # Reset keystring to nothing to prevent further presses
                     keystring = ''
