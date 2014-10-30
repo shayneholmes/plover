@@ -49,6 +49,13 @@ def characters(s):
         character = encoded[start:end].decode('utf-32-be')
         yield character
 
+"""
+SendInput code and classes based off of code
+from user "inControl" on StackOverflow:
+
+http://stackoverflow.com/questions/11906925/python-simulate-keydown
+"""
+
 LONG = ctypes.c_long
 DWORD = ctypes.c_ulong
 ULONG_PTR = ctypes.POINTER(DWORD)
