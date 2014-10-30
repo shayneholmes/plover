@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 #!/usr/bin/env python
 # Copyright (c) 2011 Hesky Fisher.
 # See LICENSE.txt for details.
@@ -109,7 +110,7 @@ KEYNAME_TO_KEYCODE = collections.defaultdict(list, {
     'Media_Next': [0xB0], 'Media_Prev': [0xB1], 'Media_Stop': [0xB2],
     'Media_Play_Pause': [0xB3], 'Sleep': [0x5F],
 
-    # The order follows that of the plover guide.
+    # The order follows that of the plover guide, roughly
     '0': [0x30], '1': [0x31], '2': [0x32], '3': [0x33], '4': [0x34],
     '5': [0x35], '6': [0x36], '7': [0x37], '8': [0x38], '9': [0x39],
 
@@ -137,9 +138,8 @@ KEYNAME_TO_KEYCODE = collections.defaultdict(list, {
     'Shift_Lock': [],
 
     'Return': [0x0D], 'Tab': [0x09], 'BackSpace': [0x08], 'Delete': [0x2E],
-    # Note I selected PRINT key, there is also a PRINT SCREEN key
     'Escape': [0x1B], 'Break': [0x03], 'Insert': [0x2D], 'Pause': [0x13],
-    'Print': [0x2A], 'Sys_Req': [],
+    'Print': [0x2C], 'Sys_Req': [],
 
     'Up': [0x26], 'Down': [0x28], 'Left': [0x25], 'Right': [0x27],
     'Page_Up': [0x21], 'Page_Down': [0x22], 'Home': [0x24], 'End': [0x23],
@@ -175,59 +175,61 @@ KEYNAME_TO_KEYCODE = collections.defaultdict(list, {
     'braceleft': [0xA1, 0xDB], 'braceright': [0xA1, 0xDD],
     'bracketleft': [0xDB], 'bracketright': [0xDD], 'colon': [0xA1, 0xBA],
     'comma': [0xBC], 'division': [], 'dollar': [0xA1, 0x34], 'equal': [0xBB],
-    'exclam': [0xA1, 0x31], 'greater': [0xA1, 0xBE], 'hyphen': [],
-    'less': [0xA1, 0xBC], 'minus': [0xBD], 'multiply': [],
+    'exclam': [0xA1, 0x31], 'greater': [0xA1, 0xBE], 'hyphen': [0xBD],
+    'less': [0xA1, 0xBC], 'minus': [0xBD], 'multiply': [0x6A],
     'numbersign': [0xA1, 0x33], 'parenleft': [0xA1, 0x39],
     'parenright': [0xA1, 0x30], 'percent': [0xA1, 0x35], 'period': [0xBE],
     'plus': [0xA1, 0xBB], 'question': [0xA1, 0xBF], 'quotedbl': [0xA1, 0xDE],
     'quoteleft': [], 'quoteright': [], 'semicolon': [0xBA], 'slash': [0xBF],
-    'space': [0x20], 'underscore': [0xA1, 0xBD],
+    'space': [0x20], 'underscore': [0xA1, 0xBD], 
+    'grave': [0xC0], 'asciicircum': [0xA1, 0x36], 'bar': [0xA1, 0xDC],
 
-    # Many of these are possible but I haven't filled them in because it's a
-    # pain to do so. Others are only possible with multiple keypresses and
-    # releases making it impossible to do as a keycombo.
+    'Help': [0x2F], 'Mode_switch': [0x1F], 'Menu': [0x5D],
 
-    'AE': [], 'Aacute': [], 'Acircumflex': [], 'Adiaeresis': [],
-    'Agrave': [], 'Aring': [], 'Atilde': [], 'Ccedilla': [], 'Eacute': [],
-    'Ecircumflex': [], 'Ediaeresis': [], 'Egrave': [], 'Eth': [],
-    'ETH': [], 'Iacute': [], 'Icircumflex': [], 'Idiaeresis': [],
-    'Igrave': [], 'Ntilde': [], 'Oacute': [], 'Ocircumflex': [],
-    'Odiaeresis': [], 'Ograve': [], 'Ooblique': [], 'Otilde': [],
-    'THORN': [], 'Thorn': [], 'Uacute': [], 'Ucircumflex': [],
-    'Udiaeresis': [], 'Ugrave': [], 'Yacute': [],
 
-    'ae': [], 'aacute': [], 'acircumflex': [], 'acute': [],
-    'adiaeresis': [], 'agrave': [], 'aring': [], 'atilde': [],
-    'ccedilla': [], 'eacute': [], 'ecircumflex': [], 'ediaeresis': [],
-    'egrave': [], 'eth': [], 'iacute': [], 'icircumflex': [],
-    'idiaeresis': [], 'igrave': [], 'ntilde': [], 'oacute': [],
-    'ocircumflex': [], 'odiaeresis': [], 'ograve': [], 'oslash': [],
-    'otilde': [], 'thorn': [], 'uacute': [], 'ucircumflex': [],
-    'udiaeresis': [], 'ugrave': [], 'yacute': [], 'ydiaeresis': [],
-
-    'cedilla': [], 'diaeresis': [], 'grave': [0xC0], 'asciicircum': [0xA1, 0x36],
-    'bar': [0xA1, 0xDC], 'brokenbar': [], 'cent': [], 'copyright': [],
-    'currency': [], 'degree': [], 'exclamdown': [], 'guillemotleft': [],
-    'guillemotright': [], 'macron': [], 'masculine': [], 'mu': [],
-    'nobreakspace': [], 'notsign': [], 'onehalf': [], 'onequarter': [],
-    'onesuperior': [], 'ordfeminine': [], 'paragraph': [],
-    'periodcentered': [], 'plusminus': [], 'questiondown': [],
-    'registered': [], 'script_switch': [], 'section': [], 'ssharp': [],
-    'sterling': [], 'threequarters': [], 'threesuperior': [],
-    'twosuperior': [], 'yen': [],
-
-    'Begin': [], 'Cancel': [], 'Clear': [], 'Execute': [], 'Find': [],
-    'Help': [0x2F], 'Linefeed': [], 'Menu': [], 'Mode_switch': [0x1F],
-    'Multi_key': [], 'MultipleCandidate': [], 'Next': [],
-    'PreviousCandidate': [], 'Prior': [], 'Redo': [], 'Select': [],
+    'Begin': [], 'Cancel': [0x03], 'Clear': [0x0C], 'Execute': [0x2B], 'Find': [],
+     'Linefeed': [], 
+    'Multi_key': [], 'MultipleCandidate': [], 'Next': [0x22],
+    'PreviousCandidate': [], 'Prior': [0x21], 'Redo': [], 'Select': [0x29],
     'SingleCandidate': [], 'Undo': [],
 
     'Eisu_Shift': [], 'Eisu_toggle': [], 'Hankaku': [], 'Henkan': [],
     'Henkan_Mode': [], 'Hiragana': [], 'Hiragana_Katakana': [],
     'Kana_Lock': [], 'Kana_Shift': [], 'Kanji': [], 'Katakana': [],
     'Mae_Koho': [], 'Massyo': [], 'Muhenkan': [], 'Romaji': [],
-    'Touroku': [], 'Zen_Koho': [], 'Zenkaku': [], 'Zenkaku_Hankaku': [],
+    'Touroku': [], 'Zen_Koho': [], 'Zenkaku': [], 'Zenkaku_Hankaku': []
 })
+
+KEYNAME_TO_UNICODE = {
+
+    'AE': u'Æ', 'Aacute': u'Á', 'Acircumflex': u'Â', 'Adiaeresis': u'ä',
+    'Agrave': u'À', 'Aring': u'Å', 'Atilde': u'Ã', 'Ccedilla': u'Ç', 'Eacute': u'É',
+    'Ecircumflex': u'Ê', 'Ediaeresis': u'Ë', 'Egrave': u'È', 'Eth': u'ð',
+    'ETH': u'Ð', 'Iacute': u'Í', 'Icircumflex': u'Î', 'Idiaeresis': u'Ï',
+    'Igrave': u'Ì', 'Ntilde': u'Ñ', 'Oacute': u'Ó', 'Ocircumflex': u'Ô',
+    'Odiaeresis': u'Ö', 'Ograve': u'Ò', 'Ooblique': u'Ø', 'Otilde': u'Õ',
+    'THORN': u'Þ', 'Thorn': u'Þ', 'Uacute': u'Ú', 'Ucircumflex': u'Û',
+    'Udiaeresis': u'Ü', 'Ugrave': u'Ù', 'Yacute': u'Ý',
+
+    'ae': u'æ', 'aacute': u'á', 'acircumflex': u'â', 'acute': u'´',
+    'adiaeresis': u'ä', 'agrave': u'à', 'aring': u'å', 'atilde': u'ã',
+    'ccedilla': u'ç', 'eacute': u'é', 'ecircumflex': u'ê', 'ediaeresis': u'ë',
+    'egrave': u'è', 'eth': u'ð', 'acute': u'í', 'icircumflex': u'î',
+    'idiaeresis': u'ï', 'igrave': u'ì', 'ntilde': u'ñ', 'oacute': u'ó',
+    'ocircumflex': u'ô', 'odiaeresis': u'ö', 'ograve': u'ò', 'oslash': u'ø',
+    'otilde': u'õ', 'thorn': u'þ', 'uacute': u'ú', 'ucircumflex': u'û',
+    'udiaeresis': u'ü', 'ugrave': u'ù', 'yacute': u'ý', 'ydiaeresis': u'ÿ',
+    'cedilla': u'¸', 'diaeresis': u'¨',
+    'brokenbar': u'¦', 'cent': u'¢', 'copyright': u'©',
+    'currency': u'¤', 'degree': u'°', 'exclamdown': u'¡', 'guillemotleft': u'«',
+    'guillemotright': u'»', 'macron': u'¯', 'masculine': u'♂', 'mu': u'μ',
+    'nobreakspace': u' ', 'notsign': u'¬', 'onehalf': u'½', 'onequarter': u'¼',
+    'onesuperior': u'¹', 'ordfeminine': u'♀', 'paragraph': u'¶',
+    'periodcentered': u'·', 'plusminus': u'±', 'questiondown': u'¿',
+    'registered': u'®', 'script_switch': '', 'ection': u'§', 'ssharp': u'ß',
+    'sterling': u'£', 'threequarters': u'¾', 'threesuperior': u'³',
+    'twosuperior': u'²', 'yen': u'¥'
+}
 
 # Maps from literal characters to their key names.
 LITERALS = collections.defaultdict(str, {
@@ -416,28 +418,50 @@ class KeyboardEmulation:
                 keystring = ''.join(current_command)
                 # Clear out current command
                 current_command = []
+
+                # Handle unicode characters by pressing them
+                print keystring
+                if keystring in KEYNAME_TO_UNICODE:
+                    print "Keystring is in Unicode"
+                    print keystring
+                    self._key_unicode(KEYNAME_TO_UNICODE[keystring])
+                    # Reset keystring to nothing to prevent further presses
+                    keystring = ''
+
                 if c == ' ':
                     # Record press and release for command's keys.
-                    self._key_press(keystring)
+                    if keystring:
+                        self._key_press(keystring)
                 elif c == '(':
                     # Record press for command's key.
-                    self._key_down(keystring)
+                    if keystring:
+                        self._key_down(keystring)
                     key_down_stack.append(keystring)
                 elif c == ')':
                     # Record press and release for command's key and
                     # release previously held keys.
-                    self._key_press(keystring)
+                    if keystring:
+                        self._key_press(keystring)
                     if key_down_stack:
                         self._key_up(key_down_stack.pop())
             else:
                 current_command.append(c)
+
         # Record final command key.
         keystring = ''.join(current_command)
-        self._key_press(keystring)
+        if keystring in KEYNAME_TO_UNICODE:
+                    print "Keystring is in Unicode"
+                    print keystring
+                    self._key_unicode(KEYNAME_TO_UNICODE[keystring])
+                    # Reset keystring to nothing to prevent further presses
+                    keystring = ''
+        else:
+            self._key_press(keystring)
         # Release all keys.
         # Should this be legal in the dict (lack of closing parens)?
         for keystring in key_down_stack:
-            self._key_up(keystring)
+            if keystring:
+                self._key_up(keystring)
 
 class KeyboardEvent(object):
     """A keyboard event."""
