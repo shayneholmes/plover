@@ -16,16 +16,13 @@ emulate keyboard input.
 
 import re
 import functools
-
+import ctypes
 import pyHook
 import pythoncom
 import threading
 import collections
 import win32api
 import win32con
-
-def SendKeys(s):
-    _SendKeys(s, with_spaces=True, pause=0)
 
 # For the purposes of this class, we'll only report key presses that
 # result in these outputs in order to exclude special key combos.
@@ -51,6 +48,43 @@ def characters(s):
         end = start + 4
         character = encoded[start:end].decode('utf-32-be')
         yield character
+
+LONG = ctypes.c_long
+DWORD = ctypes.c_ulong
+ULONG_PTR = ctypes.POINTER(DWORD)
+WORD = ctypes.c_ushort
+KEYEVENTF_EXTENDEDKEY = 0x0001
+KEYEVENTF_KEYUP = 0x0002
+KEYEVENTF_SCANCODE = 0x0008
+KEYEVENTF_UNICODE = 0x0004
+INPUT_MOUSE = 0
+INPUT_KEYBOARD = 1
+
+class MOUSEINPUT(ctypes.Structure):
+    _fields_ = (('dx', LONG),
+                ('dy', LONG),
+                ('mouseData', DWORD),
+                ('dwFlags', DWORD),
+                ('time', DWORD),
+                ('dwExtraInfo', ULONG_PTR))
+
+class KEYBDINPUT(ctypes.Structure):
+    _fields_ = (('wVk', WORD),
+                ('wScan', WORD),
+                ('dwFlags', DWORD),
+                ('time', DWORD),
+                ('dwExtraInfo', ULONG_PTR))
+
+class _INPUTunion(ctypes.Union):
+    _fields_ = (('mi', MOUSEINPUT),
+                ('ki', KEYBDINPUT))
+
+class INPUT(ctypes.Structure):
+    _fields_ = (('type', DWORD),
+                ('union', _INPUTunion))
+
+
+
 """
 NOTE: This is copied from the osxkeyboardcontrol.py and modified
 for Windows using:
@@ -69,42 +103,47 @@ KEYNAME_TO_KEYCODE = collections.defaultdict(list, {
     'Media_Play_Pause': [0xB3], 'Sleep': [0x5F],
 
     # The order follows that of the plover guide.
-    '0': [0x30], '1': [0x31], '2': [0x32], '3': [0x33], '4': [0x34], '5': [0x35],
-    '6': [0x36], '7': [0x37], '8': [0x38], '9': [0x39],
+    '0': [0x30], '1': [0x31], '2': [0x32], '3': [0x33], '4': [0x34],
+    '5': [0x35], '6': [0x36], '7': [0x37], '8': [0x38], '9': [0x39],
 
-    'a': [0x41], 'b': [0x42], 'c': [0x43], 'd': [0x44], 'e': [0x45], 'f': [0x46], 'g': [0x47],
-    'h': [0x48], 'i': [0x49], 'j': [0x4A], 'k': [0x4B], 'l': [0x4C], 'm': [0x4D], 'n': [0x4E],
-    'o': [0x4F], 'p': [0x50], 'q': [0x51], 'r': [0x52], 's': [0x53], 't': [0x54], 'u': [0x55],
-    'v': [0x56], 'w': [0x57], 'x': [0x58], 'y': [0x59], 'z': [0x5A],
+    'a': [0x41], 'b': [0x42], 'c': [0x43], 'd': [0x44], 'e': [0x45],
+    'f': [0x46], 'g': [0x47], 'h': [0x48], 'i': [0x49], 'j': [0x4A],
+    'k': [0x4B], 'l': [0x4C], 'm': [0x4D], 'n': [0x4E], 'o': [0x4F],
+    'p': [0x50], 'q': [0x51], 'r': [0x52], 's': [0x53], 't': [0x54],
+    'u': [0x55], 'v': [0x56], 'w': [0x57], 'x': [0x58], 'y': [0x59],
+    'z': [0x5A],
 
     # Same as above, plus Shift_R for capital
-    'A': [0xA1, 0x41], 'B': [0xA1, 0x42], 'C': [0xA1, 0x43], 'D': [0xA1, 0x44], 'E': [0xA1, 0x45], 'F': [0xA1, 0x46], 'G': [0xA1, 0x47],
-    'H': [0xA1, 0x48], 'I': [0xA1, 0x49], 'J': [0xA1, 0x4A], 'K': [0xA1, 0x4B], 'L': [0xA1, 0x4C], 'M': [0xA1, 0x4D], 'N': [0xA1, 0x4E],
-    'O': [0xA1, 0x4F], 'P': [0xA1, 0x50], 'Q': [0xA1, 0x51], 'R': [0xA1, 0x52], 'S': [0xA1, 0x53], 'T': [0xA1, 0x54], 'U': [0xA1, 0x55],
-    'V': [0xA1, 0x56], 'W': [0xA1, 0x57], 'X': [0xA1, 0x58], 'Y': [0xA1, 0x59], 'Z': [0xA1, 0x5A],
+    'A': [0xA1, 0x41], 'B': [0xA1, 0x42], 'C': [0xA1, 0x43], 'D': [0xA1, 0x44],
+    'E': [0xA1, 0x45], 'F': [0xA1, 0x46], 'G': [0xA1, 0x47], 'H': [0xA1, 0x48],
+    'I': [0xA1, 0x49], 'J': [0xA1, 0x4A], 'K': [0xA1, 0x4B], 'L': [0xA1, 0x4C],
+    'M': [0xA1, 0x4D], 'N': [0xA1, 0x4E], 'O': [0xA1, 0x4F], 'P': [0xA1, 0x50],
+    'Q': [0xA1, 0x51], 'R': [0xA1, 0x52], 'S': [0xA1, 0x53], 'T': [0xA1, 0x54],
+    'U': [0xA1, 0x55], 'V': [0xA1, 0x56], 'W': [0xA1, 0x57], 'X': [0xA1, 0x58],
+    'Y': [0xA1, 0x59], 'Z': [0xA1, 0x5A],
 
     'Alt_L': [0x12], 'Alt_R': [0x12], 'Control_L': [0xA2], 'Control_R': [0xA3],
     'Hyper_L': [], 'Hyper_R': [], 'Meta_L': [], 'Meta_R': [],
     'Shift_L': [0xA0], 'Shift_R': [0xA1], 'Super_L': [0x5B], 'Super_R': [0x5C],
 
-    'Caps_Lock': [0x14], 'Num_Lock': [0x90], 'Scroll_Lock': [0x91], 'Shift_Lock': [],
+    'Caps_Lock': [0x14], 'Num_Lock': [0x90], 'Scroll_Lock': [0x91],
+    'Shift_Lock': [],
 
     'Return': [0x0D], 'Tab': [0x09], 'BackSpace': [0x08], 'Delete': [0x2E],
     # Note I selected PRINT key, there is also a PRINT SCREEN key
-    'Escape': [0x1B], 'Break': [0x03], 'Insert': [0x2D], 'Pause': [0x13], 'Print': [0x2A],
-    'Sys_Req': [],
+    'Escape': [0x1B], 'Break': [0x03], 'Insert': [0x2D], 'Pause': [0x13],
+    'Print': [0x2A], 'Sys_Req': [],
 
     'Up': [0x26], 'Down': [0x28], 'Left': [0x25], 'Right': [0x27],
-    'Page_Up': [0x21],
-    'Page_Down': [0x22], 'Home': [0x24], 'End': [0x23],
+    'Page_Up': [0x21], 'Page_Down': [0x22], 'Home': [0x24], 'End': [0x23],
 
-    'F1': [0x70], 'F2': [0x71], 'F3': [0x72], 'F4': [0x73], 'F5': [0x74], 'F6': [0x75],
-    'F7': [0x76], 'F8': [0x77], 'F9': [0x78], 'F10': [0x79], 'F11': [0x7A],
-    'F12': [0x7B], 'F13': [0x7C], 'F14': [0x7D], 'F15': [0x7E], 'F16': [0x7F],
-    'F17': [0x80], 'F18': [0x81], 'F19': [0x82], 'F20': [0x83], 'F21': [0x84], 'F22': [0x85],
-    'F23': [0x86], 'F24': [0x87], 'F25': [], 'F26': [], 'F27': [], 'F28': [],
-    'F29': [], 'F30': [], 'F31': [], 'F32': [], 'F33': [], 'F34': [],
-    'F35': [],
+    'F1': [0x70], 'F2': [0x71], 'F3': [0x72], 'F4': [0x73], 'F5': [0x74],
+    'F6': [0x75], 'F7': [0x76], 'F8': [0x77], 'F9': [0x78], 'F10': [0x79],
+    'F11': [0x7A], 'F12': [0x7B], 'F13': [0x7C], 'F14': [0x7D], 'F15': [0x7E],
+    'F16': [0x7F], 'F17': [0x80], 'F18': [0x81], 'F19': [0x82], 'F20': [0x83],
+    'F21': [0x84], 'F22': [0x85], 'F23': [0x86], 'F24': [0x87], 'F25': [], 
+    'F26': [], 'F27': [], 'F28': [], 'F29': [], 'F30': [], 'F31': [], 'F32': [],
+    'F33': [], 'F34': [], 'F35': [],
 
     'L1': [], 'L2': [], 'L3': [], 'L4': [], 'L5': [], 'L6': [],
     'L7': [], 'L8': [], 'L9': [], 'L10': [],
@@ -113,27 +152,29 @@ KEYNAME_TO_KEYCODE = collections.defaultdict(list, {
     'R7': [], 'R8': [], 'R9': [], 'R10': [], 'R11': [], 'R12': [],
     'R13': [], 'R14': [], 'R15': [],
 
-    'KP_0': [0x60], 'KP_1': [0x61], 'KP_2': [0x62], 'KP_3': [0x63], 'KP_4': [0x64],
-    'KP_5': [0x65], 'KP_6': [0x66], 'KP_7': [0x67], 'KP_8': [0x68], 'KP_9': [0x69],
-    'KP_Add': [0xA1, 0xBB], 'KP_Begin': [], 'KP_Decimal': [0x6E], 'KP_Delete': [0x2E],
-    'KP_Divide': [0x6F], 'KP_Down': [], 'KP_End': [], 'KP_Enter': [0x0D],
-    'KP_Equal': [0xBB], 'KP_F1': [], 'KP_F2': [], 'KP_F3': [], 'KP_F4': [],
-    'KP_Home': [], 'KP_Insert': [], 'KP_Left': [], 'KP_Multiply': [0x6A],
-    'KP_Next': [], 'KP_Page_Down': [], 'KP_Page_Up': [], 'KP_Prior': [],
-    'KP_Right': [], 'KP_Separator': [], 'KP_Space': [], 'KP_Subtract': [0x6D],
-    'KP_Tab': [], 'KP_Up': [],
+    'KP_0': [0x60], 'KP_1': [0x61], 'KP_2': [0x62], 'KP_3': [0x63],
+    'KP_4': [0x64], 'KP_5': [0x65], 'KP_6': [0x66], 'KP_7': [0x67],
+    'KP_8': [0x68], 'KP_9': [0x69], 'KP_Add': [0xA1, 0xBB], 'KP_Begin': [],
+    'KP_Decimal': [0x6E], 'KP_Delete': [0x2E], 'KP_Divide': [0x6F],
+    'KP_Down': [], 'KP_End': [], 'KP_Enter': [0x0D], 'KP_Equal': [0xBB],
+    'KP_F1': [], 'KP_F2': [], 'KP_F3': [], 'KP_F4': [], 'KP_Home': [],
+    'KP_Insert': [], 'KP_Left': [], 'KP_Multiply': [0x6A], 'KP_Next': [],
+    'KP_Page_Down': [], 'KP_Page_Up': [], 'KP_Prior': [], 'KP_Right': [],
+    'KP_Separator': [], 'KP_Space': [], 'KP_Subtract': [0x6D], 'KP_Tab': [],
+    'KP_Up': [],
 
     'ampersand': [0xA1, 0x37], 'apostrophe': [0xDE], 'asciitilde': [0xA1, 0xC0],
     'asterisk': [0xA1, 0x38], 'at': [0xA1, 0x32], 'backslash': [0xDC],
-    'braceleft': [0xA1, 0xDB], 'braceright': [0xA1, 0xDD], 'bracketleft': [0xDB],
-    'bracketright': [0xDD], 'colon': [0xA1, 0xBA], 'comma': [0xBC], 'division': [],
-    'dollar': [0xA1, 0x34], 'equal': [0xBB], 'exclam': [0xA1, 0x31], 'greater': [0xA1, 0xBE],
-    'hyphen': [], 'less': [0xA1, 0xBC], 'minus': [0xBD], 'multiply': [],
-    'numbersign': [0xA1, 0x33], 'parenleft': [0xA1, 0x39], 'parenright': [0xA1, 0x30],
-    'percent': [0xA1, 0x35], 'period': [0xBE], 'plus': [0xA1, 0xBB],
-    'question': [0xA1, 0xBF], 'quotedbl': [0xA1, 0xDE], 'quoteleft': [],
-    'quoteright': [], 'semicolon': [0xBA], 'slash': [0xBF], 'space': [0x20],
-    'underscore': [0xA1, 0xBD],
+    'braceleft': [0xA1, 0xDB], 'braceright': [0xA1, 0xDD],
+    'bracketleft': [0xDB], 'bracketright': [0xDD], 'colon': [0xA1, 0xBA],
+    'comma': [0xBC], 'division': [], 'dollar': [0xA1, 0x34], 'equal': [0xBB],
+    'exclam': [0xA1, 0x31], 'greater': [0xA1, 0xBE], 'hyphen': [],
+    'less': [0xA1, 0xBC], 'minus': [0xBD], 'multiply': [],
+    'numbersign': [0xA1, 0x33], 'parenleft': [0xA1, 0x39],
+    'parenright': [0xA1, 0x30], 'percent': [0xA1, 0x35], 'period': [0xBE],
+    'plus': [0xA1, 0xBB], 'question': [0xA1, 0xBF], 'quotedbl': [0xA1, 0xDE],
+    'quoteleft': [], 'quoteright': [], 'semicolon': [0xBA], 'slash': [0xBF],
+    'space': [0x20], 'underscore': [0xA1, 0xBD],
 
     # Many of these are possible but I haven't filled them in because it's a
     # pain to do so. Others are only possible with multiple keypresses and
@@ -253,40 +294,79 @@ class KeyboardCapture(threading.Thread):
 
 class KeyboardEmulation:
 
- 
-    def key_down(self, keyname):
+    # Sends input types to buffer
+    def _SendInput(self, *inputs):
+        nInputs = len(inputs)
+        LPINPUT = INPUT * nInputs
+        pInputs = LPINPUT(*inputs)
+        cbSize = ctypes.c_int(ctypes.sizeof(INPUT))
+        return ctypes.windll.user32.SendInput(nInputs, pInputs, cbSize)
+
+    # Input type (can be mouse, keyboard)
+    def _Input(self, structure):
+        if isinstance(structure, MOUSEINPUT):
+            return INPUT(INPUT_MOUSE, _INPUTunion(mi=structure))
+        if isinstance(structure, KEYBDINPUT):
+            return INPUT(INPUT_KEYBOARD, _INPUTunion(ki=structure))
+        raise TypeError('Cannot create INPUT structure!')
+
+    # Container to send mouse input
+    # Not used, but maybe one day it will be useful
+    def _MouseInput(flags, x, y, data):
+        return MOUSEINPUT(x, y, data, flags, 0, None)
+
+    # KEYBoarD input type to send key input
+    def _KeybdInput(self, code, flags):
+        if flags == KEYEVENTF_UNICODE:
+            # special handling of Unicode characters
+            return KEYBDINPUT(0, code, flags, 0, None)
+        return KEYBDINPUT(code, code, flags, 0, None)
+
+    # Abstraction to set flags to 0 and create an input type
+    def _Keyboard(self, code, flags=0):
+        return self._Input(self._KeybdInput(code, flags))
+
+    # Presses a key down
+    def _key_down(self, keyname):
         # Press all keys
         for keycode in KEYNAME_TO_KEYCODE[keyname]:
-                win32api.keybd_event(
-                    keycode,
-                    0,
-                    0,
-                    0
-                )
+            self._SendInput(self._Keyboard(keycode)) 
 
-    def key_up(self, keyname):
+    # Releases a key
+    def _key_up(self, keyname):
         # Release all keys backwards
-            for keycode in reversed(KEYNAME_TO_KEYCODE[keyname]):
-                win32api.keybd_event(
-                    keycode,
-                    0,
-                    win32con.KEYEVENTF_KEYUP,
-                    0
-                )
+        for keycode in reversed(KEYNAME_TO_KEYCODE[keyname]):
+            self._SendInput(self._Keyboard(keycode, KEYEVENTF_KEYUP))
+ 
+    # Press and release a key
+    def _key_press(self, keyname):
+        self._key_down(keyname)
+        self._key_up(keyname)
 
-    def key_press(self, keyname):
-        self.key_down(keyname)
-        self.key_up(keyname)
+    # Send a Unicode character to application
+    def _key_unicode(self, ch):
+        self._SendInput(self._Keyboard(ord(ch), KEYEVENTF_UNICODE))
     
     def send_backspaces(self, number_of_backspaces):
         for _ in xrange(number_of_backspaces):
-            self.key_press("BackSpace")
+            self._key_press("BackSpace")
 
     def send_string(self, s):
         for c in characters(s):
+
+            # We normalize characters
+            # Like . to period, * to asterisk
             if c in LITERALS:
                 c = LITERALS[c]
-            self.key_press(c)
+
+            # We check if we know the character
+            # If we do we can do a manual keycode
+            if c in KEYNAME_TO_KEYCODE:
+                self._key_press(c)
+
+            # Otherwise, we send it as a Unicode character
+            else:
+                self._key_unicode(c)
             
     def send_key_combination(self, combo_string):
         """Emulate a sequence of key combinations.
@@ -311,6 +391,15 @@ class KeyboardEmulation:
         # When encountering (, we will add to the held stack
         # ) will release these from the stack
 
+        # There is a problem. If the user defines something like:
+        #   Shift_L(ampersand x)
+        # Shift_L( will press the shift key, but ampersand will release it
+        # too early. x output will be lowercase.
+        # In order to combat this, ampersand and other shifted characters
+        # use Shift_R as most entries seem to use Shift_L.
+        # That being said, we can consider a shifted-shifted character to be
+        # undefined behavior...
+
         keycode_events = []
         key_down_stack = []
         current_command = []
@@ -322,26 +411,26 @@ class KeyboardEmulation:
                 current_command = []
                 if c == ' ':
                     # Record press and release for command's keys.
-                    self.key_press(keystring)
+                    self._key_press(keystring)
                 elif c == '(':
                     # Record press for command's key.
-                    self.key_down(keystring)
+                    self._key_down(keystring)
                     key_down_stack.append(keystring)
                 elif c == ')':
                     # Record press and release for command's key and
                     # release previously held keys.
-                    self.key_press(keystring)
+                    self._key_press(keystring)
                     if key_down_stack:
-                        self.key_up(key_down_stack.pop())
+                        self._key_up(key_down_stack.pop())
             else:
                 current_command.append(c)
         # Record final command key.
         keystring = ''.join(current_command)
-        self.key_press(keystring)
+        self._key_press(keystring)
         # Release all keys.
         # Should this be legal in the dict (lack of closing parens)?
         for keystring in key_down_stack:
-            self.key_up(keystring)
+            self._key_up(keystring)
 
 class KeyboardEvent(object):
     """A keyboard event."""
