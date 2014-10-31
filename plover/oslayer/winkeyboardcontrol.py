@@ -134,7 +134,7 @@ KEYNAME_TO_KEYCODE = collections.defaultdict(list, {
     'U': [0xA1, 0x55], 'V': [0xA1, 0x56], 'W': [0xA1, 0x57], 'X': [0xA1, 0x58],
     'Y': [0xA1, 0x59], 'Z': [0xA1, 0x5A],
 
-    'Alt_L': [0x12], 'Alt_R': [0x12], 'Control_L': [0xA2], 'Control_R': [0xA3],
+    'Alt_L': [0xA4], 'Alt_R': [0xA5], 'Control_L': [0xA2], 'Control_R': [0xA3],
     'Hyper_L': [], 'Hyper_R': [], 'Meta_L': [], 'Meta_R': [],
     'Shift_L': [0xA0], 'Shift_R': [0xA1], 'Super_L': [0x5B], 'Super_R': [0x5C],
 
@@ -339,12 +339,14 @@ class KeyboardEmulation:
     # Presses a key down
     def _key_down(self, keyname):
         # Press all keys
+        print "Down", keyname
         for keycode in KEYNAME_TO_KEYCODE[keyname]:
             self._SendInput(self._Keyboard(keycode))
 
     # Releases a key
     def _key_up(self, keyname):
         # Release all keys backwards
+        print "Up", keyname
         for keycode in reversed(KEYNAME_TO_KEYCODE[keyname]):
             self._SendInput(self._Keyboard(keycode, KEYEVENTF_KEYUP))
 
@@ -376,6 +378,7 @@ class KeyboardEmulation:
 
             # Otherwise, we send it as a Unicode character
             else:
+                print "unicode!"
                 self._key_unicode(ord(c))
 
     def send_key_combination(self, combo_string):
@@ -451,7 +454,7 @@ class KeyboardEmulation:
                     self._key_unicode(KEYNAME_TO_UNICODE[keystring])
                     # Reset keystring to nothing to prevent further presses
                     keystring = ''
-        else:
+        elif keystring:
             self._key_press(keystring)
         # Release all keys.
         # Should this be legal in the dict (lack of closing parens)?
