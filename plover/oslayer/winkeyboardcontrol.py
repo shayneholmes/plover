@@ -244,6 +244,18 @@ LITERALS = collections.defaultdict(str, {
     '?': 'question', '\t': 'Tab', ' ': 'space'
 })
 
+# The extended keys consist of the ALT and CTRL keys on the right-hand
+# side of the keyboard; the INS, DEL, HOME, END, PAGE UP, PAGE DOWN,
+# and arrow keys in the clusters to the left of the numeric keypad;
+# the NUM LOCK key; the BREAK (CTRL+PAUSE) key; the PRINT SCRN key; and
+# the divide (/) and ENTER keys in the numeric keypad.
+EXTENDEDKEYS = {
+    # Control   Alt         INS   DEL   HOME  END   PG UP PG DN Arrows
+    0xA2, 0xA3, 0xA4, 0xA5, 0x2D, 0x2E, 0x21, 0x22, 0x24, 0x23, 0x25, 0x26,
+    # Arrow     NmLk  Break PtSc  Divide
+    0x27, 0x28, 0x90, 0x03, 0x2C, 0x6F
+}
+
 
 class KeyboardCapture(threading.Thread):
     """Listen to all keyboard events."""
@@ -339,16 +351,21 @@ class KeyboardEmulation:
     # Presses a key down
     def _key_down(self, keyname):
         # Press all keys
-        print "Down", keyname
         for keycode in KEYNAME_TO_KEYCODE[keyname]:
-            self._SendInput(self._Keyboard(keycode))
+            if keycode in EXTENDEDKEYS:
+                self._SendInput(self._Keyboard(keycode, KEYEVENTF_EXTENDEDKEY))
+            else:
+                self._SendInput(self._Keyboard(keycode))
 
     # Releases a key
     def _key_up(self, keyname):
-        # Release all keys backwards
-        print "Up", keyname
-        for keycode in reversed(KEYNAME_TO_KEYCODE[keyname]):
-            self._SendInput(self._Keyboard(keycode, KEYEVENTF_KEYUP))
+        # Release all keys
+        for keycode in KEYNAME_TO_KEYCODE[keyname]:
+            if keycode in EXTENDEDKEYS:
+                self._SendInput(self._Keyboard(
+                    keycode, KEYEVENTF_KEYUP | KEYEVENTF_EXTENDEDKEY))
+            else:
+                self._SendInput(self._Keyboard(keycode, KEYEVENTF_KEYUP))
 
     # Press and release a key
     def _key_press(self, keyname):
@@ -378,7 +395,6 @@ class KeyboardEmulation:
 
             # Otherwise, we send it as a Unicode character
             else:
-                print "unicode!"
                 self._key_unicode(ord(c))
 
     def send_key_combination(self, combo_string):
@@ -431,20 +447,31 @@ class KeyboardEmulation:
 
                 if c == ' ':
                     # Record press and release for command's keys.
-                    if keystring:
+                    if keystring in KEYNAME_TO_KEYCODE:
                         self._key_press(keystring)
                 elif c == '(':
                     # Record press for command's key.
-                    if keystring:
+                    if keystring in KEYNAME_TO_KEYCODE:
                         self._key_down(keystring)
+                    # We always add to the stack
+                    # Even if not a valid KEYCODE or is a UNICODE
+                    # Because if the user accidentally
+                    # used a non-existent command,
+                    # say `Shift_L(dogma(q) a)`, we still want
+                    # the parenthesis count to match
+                    # and output `QA`
                     key_down_stack.append(keystring)
                 elif c == ')':
                     # Record press and release for command's key and
                     # release previously held keys.
-                    if keystring:
+                    if keystring in KEYNAME_TO_KEYCODE:
                         self._key_press(keystring)
                     if key_down_stack:
-                        self._key_up(key_down_stack.pop())
+                        # We check that the key pressed down is
+                        # an actual key.
+                        down_key = key_down_stack.pop()
+                        if down_key in KEYNAME_TO_KEYCODE:
+                            self._key_up(down_key)
             else:
                 current_command.append(c)
 
@@ -454,12 +481,12 @@ class KeyboardEmulation:
                     self._key_unicode(KEYNAME_TO_UNICODE[keystring])
                     # Reset keystring to nothing to prevent further presses
                     keystring = ''
-        elif keystring:
+        elif keystring in KEYNAME_TO_KEYCODE:
             self._key_press(keystring)
         # Release all keys.
         # Should this be legal in the dict (lack of closing parens)?
         for keystring in key_down_stack:
-            if keystring:
+            if keystring in KEYNAME_TO_KEYCODE:
                 self._key_up(keystring)
 
 
