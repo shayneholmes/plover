@@ -376,9 +376,21 @@ class KeyboardEmulation:
         self._key_down(keyname)
         self._key_up(keyname)
 
-    # Send a Unicode character to application
+    # Send a Unicode character to application from code
     def _key_unicode(self, code):
         self._SendInput(self._Keyboard(code, KEYEVENTF_UNICODE))
+
+    # Take an array of Unicode characters
+    def _key_unicode_string(self, codes):
+        # This is used for anything larger
+        # than UTF-16 character.
+        # For example, emoji.
+        # Logic is to send each input
+        # and the OS should handle it.
+        inputs = []
+        for code in codes:
+            inputs.append(self._Keyboard(ord(code), KEYEVENTF_UNICODE))
+        self._SendInput(*inputs)
 
     def send_backspaces(self, number_of_backspaces):
         for _ in xrange(number_of_backspaces):
@@ -399,7 +411,7 @@ class KeyboardEmulation:
 
             # Otherwise, we send it as a Unicode character
             else:
-                self._key_unicode(ord(c))
+                self._key_unicode_string(c)
 
     def send_key_combination(self, combo_string):
         """Emulate a sequence of key combinations.
