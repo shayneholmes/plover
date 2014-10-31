@@ -24,6 +24,9 @@ import collections
 import win32api
 import win32con
 
+SendInput = ctypes.windll.user32.SendInput
+MapVirtualKey = ctypes.windll.user32.MapVirtualKeyW
+
 # For the purposes of this class, we'll only report key presses that
 # result in these outputs in order to exclude special key combos.
 KEY_TO_ASCII = {
@@ -322,7 +325,7 @@ class KeyboardEmulation:
         LPINPUT = INPUT * nInputs
         pInputs = LPINPUT(*inputs)
         cbSize = ctypes.c_int(ctypes.sizeof(INPUT))
-        return ctypes.windll.user32.SendInput(nInputs, pInputs, cbSize)
+        return SendInput(nInputs, pInputs, cbSize)
 
     # Input type (can be mouse, keyboard)
     def _Input(self, structure):
@@ -342,7 +345,8 @@ class KeyboardEmulation:
         if flags == KEYEVENTF_UNICODE:
             # special handling of Unicode characters
             return KEYBDINPUT(0, code, flags, 0, None)
-        return KEYBDINPUT(code, code, flags, 0, None)
+
+        return KEYBDINPUT(code, MapVirtualKey(code, 0), flags, 0, None)
 
     # Abstraction to set flags to 0 and create an input type
     def _Keyboard(self, code, flags=0):
@@ -363,7 +367,7 @@ class KeyboardEmulation:
         for keycode in KEYNAME_TO_KEYCODE[keyname]:
             if keycode in EXTENDEDKEYS:
                 self._SendInput(self._Keyboard(
-                    keycode, KEYEVENTF_KEYUP | KEYEVENTF_EXTENDEDKEY))
+                    keycode, (KEYEVENTF_KEYUP | KEYEVENTF_EXTENDEDKEY)))
             else:
                 self._SendInput(self._Keyboard(keycode, KEYEVENTF_KEYUP))
 
