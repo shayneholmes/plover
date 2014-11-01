@@ -188,7 +188,7 @@ KEYNAME_TO_KEYCODE = collections.defaultdict(list, {
     'parenright': [0xA1, 0x30], 'percent': [0xA1, 0x35], 'period': [0xBE],
     'plus': [0xA1, 0xBB], 'question': [0xA1, 0xBF], 'quotedbl': [0xA1, 0xDE],
     'quoteleft': [], 'quoteright': [], 'semicolon': [0xBA], 'slash': [0xBF],
-    'space': [0x20], 'underscore': [0xA1, 0xBD], 
+    'space': [0x20], 'underscore': [0xA1, 0xBD],
     'grave': [0xC0], 'asciicircum': [0xA1, 0x36], 'bar': [0xA1, 0xDC],
 
     'Help': [0x2F], 'Mode_switch': [0x1F], 'Menu': [0x5D],
@@ -454,20 +454,25 @@ class KeyboardEmulation:
                 keystring = ''.join(current_command)
                 # Clear out current command
                 current_command = []
+                is_keycode = keystring in KEYNAME_TO_KEYCODE
 
                 # Handle unicode characters by pressing them
                 if keystring in KEYNAME_TO_UNICODE:
                     self._key_unicode(KEYNAME_TO_UNICODE[keystring])
                     # Reset keystring to nothing to prevent further presses
                     keystring = ''
+                elif not is_keycode:
+                    # A unicode character not known to us
+                    # non-latin characters, emoji, etc.
+                    self._key_unicode_string(keystring)
 
                 if c == ' ':
                     # Record press and release for command's keys.
-                    if keystring in KEYNAME_TO_KEYCODE:
+                    if is_keycode:
                         self._key_press(keystring)
                 elif c == '(':
                     # Record press for command's key.
-                    if keystring in KEYNAME_TO_KEYCODE:
+                    if is_keycode:
                         self._key_down(keystring)
                     # We always add to the stack
                     # Even if not a valid KEYCODE or is a UNICODE
@@ -480,7 +485,7 @@ class KeyboardEmulation:
                 elif c == ')':
                     # Record press and release for command's key and
                     # release previously held keys.
-                    if keystring in KEYNAME_TO_KEYCODE:
+                    if is_keycode:
                         self._key_press(keystring)
                     if key_down_stack:
                         # We check that the key pressed down is
@@ -499,6 +504,9 @@ class KeyboardEmulation:
                     keystring = ''
         elif keystring in KEYNAME_TO_KEYCODE:
             self._key_press(keystring)
+        elif len(keystring) > 0:
+            self._key_unicode_string(keystring)
+
         # Release all keys.
         # Should this be legal in the dict (lack of closing parens)?
         for keystring in key_down_stack:
