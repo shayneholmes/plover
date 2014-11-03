@@ -18,8 +18,6 @@ import re
 import functools
 import ctypes
 import pyHook
-import pythoncom
-import threading
 import collections
 import win32api
 import win32con
@@ -260,7 +258,7 @@ EXTENDEDKEYS = {
 }
 
 
-class KeyboardCapture(threading.Thread):
+class KeyboardCapture():
     """Listen to all keyboard events."""
 
     CONTROL_KEYS = set(('Lcontrol', 'Rcontrol'))
@@ -268,13 +266,14 @@ class KeyboardCapture(threading.Thread):
     ALT_KEYS = set(('Lmenu', 'Rmenu'))
 
     def __init__(self):
-        threading.Thread.__init__(self)
 
         self.suppress_keyboard(True)
 
         self.shift = False
         self.ctrl = False
         self.alt = False
+
+        self.alive = False
 
         # NOTE(hesky): Does this need to be more efficient and less
         # general if it will be called for every keystroke?
@@ -298,14 +297,17 @@ class KeyboardCapture(threading.Thread):
         self.hm.KeyDown = functools.partial(on_key_event, 'key_down')
         self.hm.KeyUp = functools.partial(on_key_event, 'key_up')
 
+    def start(self):
+        self.alive = True
+        self.run()
+
     def run(self):
         self.hm.HookKeyboard()
-        pythoncom.PumpMessages()
 
     def cancel(self):
-        if self.is_alive():
+        if self.alive:
             self.hm.UnhookKeyboard()
-            win32api.PostThreadMessage(self.ident, win32con.WM_QUIT)
+            self.alive = False
 
     def can_suppress_keyboard(self):
         return True
